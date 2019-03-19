@@ -1,0 +1,9 @@
+C:\Users\rps\Code\github\rx\Rx\BasicImplementations\bin\Debug\RiskAndPricingSolutions.Rx.SharedResources.BasicImplementations.dll
+C:\Users\rps\Code\github\rx\Rx\BasicImplementations\bin\Debug\RiskAndPricingSolutions.Rx.SharedResources.BasicImplementations.pdb
+C:\Users\rps\Code\github\rx\Rx\BasicImplementations\bin\Debug\System.Reactive.dll
+C:\Users\rps\Code\github\rx\Rx\BasicImplementations\bin\Debug\System.Reactive.xml
+C:\Users\rps\Code\github\rx\Rx\BasicImplementations\obj\Debug\BasicImplementations.csprojAssemblyReference.cache
+C:\Users\rps\Code\github\rx\Rx\BasicImplementations\obj\Debug\BasicImplementations.csproj.CoreCompileInputs.cache
+C:\Users\rps\Code\github\rx\Rx\BasicImplementations\obj\Debug\BasicImplementations.csproj.CopyComplete
+C:\Users\rps\Code\github\rx\Rx\BasicImplementations\obj\Debug\RiskAndPricingSolutions.Rx.SharedResources.BasicImplementations.dll
+C:\Users\rps\Code\github\rx\Rx\BasicImplementations\obj\Debug\RiskAndPricingSolutions.Rx.SharedResources.BasicImplementations.pdb
