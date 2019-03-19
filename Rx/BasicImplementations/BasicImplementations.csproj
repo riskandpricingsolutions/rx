@@ -50,6 +50,7 @@
     <Compile Include="ActionDisposable.cs" />
     <Compile Include="CurrentThreadScheduler.cs" />
     <Compile Include="DelegateBasedObserver.cs" />
+    <Compile Include="MyLogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SimpleObservable.cs" />
     <Compile Include="SimpleObserver.cs" />
