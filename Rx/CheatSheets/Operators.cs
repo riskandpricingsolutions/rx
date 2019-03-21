@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reactive.Concurrency;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
+using System.Threading;
 using NUnit.Framework;
 using RiskAndPricingSolutions.Rx.SharedResources.BasicImplementations;
 using static System.Console;
@@ -22,14 +25,71 @@ namespace CheatSheets
             // Observable.Range(int,int)
             // Return an observable which consists of n consecutive iteger values
             // Finally OnCompleted is invoked
-            Observable.Range(0,3)
+            Observable.Range(1,3)
                 .Subscribe(WriteLine, () => WriteLine("OnCompleted"));
 
+            // Observable.Repear(TResult,int)
+            // Return an observable which repeats the given 
+            //  value the specified number of times
+            WriteLine("Repeat(TRresult,int)");
+            Observable.Repeat(2,3)
+                .Subscribe(WriteLine, () => WriteLine("OnCompleted\n"));
+
+            WriteLine("Repeat(IObservable<TRresult>,int)");
             // Observable.Range(int)
             Observable.Range(0, 2)
                 .Repeat(2)
-                .Subscribe(WriteLine, () => WriteLine("OnCompleted"));
+                .Subscribe(WriteLine, () => WriteLine("OnCompleted\n"));
 
+        }
+
+        [Test]
+        public void Generate()
+        {
+            AutoResetEvent h = new AutoResetEvent(false);
+
+            WriteLine("Generate");
+            Observable.Generate(
+                    0,
+                    i => i < 3,
+                    i => ++i,
+                    i => $"Value {i}",
+                    i => TimeSpan.FromSeconds(i))
+                .SubscribeOn(DefaultScheduler.Instance)
+                .ObserveOn(DefaultScheduler.Instance)
+                .Subscribe(WriteLine, () => h.Set());
+
+            h.WaitOne();
+        }
+
+        [Test]
+        public void Scan()
+        {
+            WriteLine("Scan");
+            Observable.Range(1, 3)
+                .Scan(0,(cum, i1) => cum+i1)
+                .Subscribe(WriteLine, () => WriteLine("OnCompleted\n"));
+        }
+
+
+        [Test]
+        public void SelectMany()
+        {
+            Subject<int>[] subs = new Subject<int>[]
+            {
+                new Subject<int>(), 
+                new Subject<int>() 
+            };
+
+            Observable
+                .Range(0, 2)
+                .SelectMany(i => subs[i])
+                .Subscribe(WriteLine);
+
+            subs[0].OnNext(1);
+            subs[1].OnNext(2);
+            subs[0].OnNext(3);
+            subs[1].OnNext(4);
         }
 
         [Test]

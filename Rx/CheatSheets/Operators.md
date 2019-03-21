@@ -1,7 +1,7 @@
 ﻿# Rx Operator Cheet Sheet
 
 ## Observable.Return(T)
-Returns an observable with a single value and then calls OnCompleted
+Returns an observable consisting of single value and then calls OnCompleted
 ##### C#
 ```csharp
 Observable.Return(1)
@@ -10,26 +10,96 @@ Observable.Return(1)
 ##### Marble
 ![Return(T)](Resources/Return(T).png)
 
-
 ## Observable.Range(int,int)
+Returns an observable over a sequence of consecutive integers
 ##### C#
 ```csharp
-Observable.Range(0,3)
+Observable.Range(1,3)
  .Subscribe(WriteLine, () => WriteLine("OnCompleted"));
 ```
 ##### Marble
 ![Range(Int,Int)](Resources/Range(int,int).png)
 
-## Observable.Repeat(int,int)
+## Observable.Repeat(TResult,int)
+Repeat the give value a specified number of times
+
 ##### C#
 
 ```csharp
-GenerateObservable(0, 2)
- .Repeat(2)
- .Subscribe(Console.WriteLine);
+Observable.Repeat(2,3)
+  .Subscribe(WriteLine, () => WriteLine("OnCompleted\n"));
 ```
 ##### Marble
-![Repeat(Int)](Resources/Repeat(int).png)
+![Repeat(T,Int)](Resources/Repeat(T,int).png)
+
+## Observable.Repeat(IObservable&lt;TResult&gt;,int)
+Repeat the give sequence the specified number of times
+
+##### C#
+
+```csharp
+Observable.Range(0, 2)
+ .Repeat(2)
+ .Subscribe(WriteLine, () => WriteLine("OnCompleted\n"));
+```
+##### Marble
+![Repeat(T Result,Int)](Resources/Repeat(TResult,int).png)
+
+## Observable.Generate
+Supports the creation of more complex sequences of event
+##### C#
+```csharp
+AutoResetEvent h = new AutoResetEvent(false);
+
+WriteLine("Generate");
+Observable
+	.Generate(
+		0,
+		i => i < 3,
+		i => ++i,
+		i => $"Value {i}",
+		i => TimeSpan.FromSeconds(i))
+	.SubscribeOn(DefaultScheduler.Instance)
+    .ObserveOn(DefaultScheduler.Instance)
+    .Subscribe(WriteLine, () => h.Set());
+
+h.WaitOne();
+```
+##### Marble
+
+## Scan(TAccumulate,Func<TAccumulate, TSource, TAccumulate>)
+An accumulator which produces a sequence of accumulated values
+##### C#
+```csharp
+Observable.Range(1, 3)
+ .Scan(0,(cum, i1) => cum+i1)
+ .Subscribe(WriteLine, () => WriteLine("OnCompleted\n"));
+```
+##### Marble
+![Scan](Resources/Scan.png)
+
+## SelectMany
+SelectMany seems to work by taking an observable sequence and using each value from that sequence to generate another sequence. The generated sequences are then merged (flattened) together
+##### C#
+```csharp
+Subject<int>[] subs = new Subject<int>[]
+{
+  new Subject<int>(), 
+  new Subject<int>() 
+};
+
+Observable
+ .Range(0, 2)
+ .SelectMany(i => subs[i])
+ .Subscribe(WriteLine);
+
+  subs[0].OnNext(1);
+  subs[1].OnNext(2);
+  subs[0].OnNext(3);
+  subs[1].OnNext(4);
+```
+##### Marble
+![Select Many](Resources/SelectMany.png)
 
 
 ## Buffer(int)

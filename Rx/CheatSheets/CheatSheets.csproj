@@ -81,7 +81,11 @@
     <Content Include="Resources\Buffer%28int,int%29.png" />
     <Content Include="Resources\Range%28int,int%29.png" />
     <Content Include="Resources\Repeat%28int%29.png" />
+    <Content Include="Resources\Repeat%28T,int%29.png" />
+    <Content Include="Resources\Repeat%28TResult,int%29.png" />
     <Content Include="Resources\Return%28T%29.png" />
+    <Content Include="Resources\Scan.png" />
+    <Content Include="Resources\SelectMany.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
