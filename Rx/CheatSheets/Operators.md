@@ -185,9 +185,7 @@ b.OnNext("2");
 a.OnNext("c");
 ```
 ##### Marble
-
 ![Switch](Resources/Switch.png)
-
 
 ## CombineLatest
 Combines the latest value from two streams as each stream
