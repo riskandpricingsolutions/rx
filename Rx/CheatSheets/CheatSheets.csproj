@@ -76,9 +76,13 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Resources\Am.png" />
+    <Content Include="Resources\Amb.png" />
     <Content Include="Resources\Buffer%28FuncObservable%29.png" />
     <Content Include="Resources\Buffer%28int%29.png" />
     <Content Include="Resources\Buffer%28int,int%29.png" />
+    <Content Include="Resources\Concat.png" />
+    <Content Include="Resources\Merge.png" />
     <Content Include="Resources\Range%28int,int%29.png" />
     <Content Include="Resources\Repeat%28int%29.png" />
     <Content Include="Resources\Repeat%28T,int%29.png" />
@@ -86,6 +90,8 @@
     <Content Include="Resources\Return%28T%29.png" />
     <Content Include="Resources\Scan.png" />
     <Content Include="Resources\SelectMany.png" />
+    <Content Include="Resources\StartsWith.png" />
+    <Content Include="Resources\Switch.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

@@ -1,4 +1,4 @@
-﻿# Rx Operator Cheet Sheet
+﻿# Operator Cheet Sheet
 
 ## Observable.Return(T)
 Returns an observable consisting of single value and then calls OnCompleted
@@ -101,9 +101,97 @@ Observable
 ##### Marble
 ![Select Many](Resources/SelectMany.png)
 
+## Concat
+
+##### C#
+```csharp
+Observable.Range(0, 2).Concat(Observable.Range(5, 2))
+                .Subscribe(WriteLine);
+```
+##### Marble
+![Concat](Resources/Concat.png)
+
+## StartsWith
+Prepends a number of values to the beggining of a stream
+
+##### C#
+```csharp
+Observable
+  .Range(10, 2)
+  .StartWith(8, 9)
+  .Subscribe(WriteLine);
+```
+##### Marble
+![Starts With](Resources/StartsWith.png)
+
+## Amb
+The first of a set of sequences to produce values wins and only its elements make it into the output stream
+
+##### C#
+```csharp
+Subject<string> a = new Subject<string>();
+Subject<string> b = new Subject<string>();
+
+Observable.Amb(a,b)
+  .Subscribe(WriteLine);
+
+a.OnNext("a");
+b.OnNext("1");
+a.OnNext("b");
+b.OnNext("2");
+```
+##### Marble
+![Amb](Resources/Amb.png)
+
+## Merge
+Combines multiple streams 
+
+##### C#
+```csharp
+Subject<string> a = new Subject<string>();
+Subject<string> b = new Subject<string>();
+
+Observable.Merge(a, b)
+  .Subscribe(WriteLine);
+
+a.OnNext("a");
+b.OnNext("1");
+a.OnNext("b");
+b.OnNext("2");
+```
+##### Marble
+![Merge](Resources/Merge.png)
+
+## Switch
+Works on a stream of streams. When the first stream starts
+publishing its events are published into the result stream until the second stream starts publishing. At which point the first stream is ubseubscribed
+
+##### C#
+```csharp
+Subject<string> a = new Subject<string>();
+Subject<string> b = new Subject<string>();
+
+Subject<Subject<string>> master = new Subject<Subject<string>>();
+
+master.Switch()
+ .Subscribe(WriteLine);
+
+master.OnNext(a);
+a.OnNext("a");
+a.OnNext("b");
+master.OnNext(b);
+b.OnNext("1");
+b.OnNext("2");
+a.OnNext("c");
+```
+##### Marble
+
+![Switch](Resources/Switch.png)
+
 
 ## Buffer(int)
 Consider the following code which highlights the use of **Buffer(int)** to transform an observable sequence of int into an observable sequence of list of int. We consider each List<int> a buffer. 
+
 
 ##### C#
 ```csharp
