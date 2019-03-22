@@ -189,6 +189,74 @@ a.OnNext("c");
 ![Switch](Resources/Switch.png)
 
 
+## CombineLatest
+Combines the latest value from two streams as each stream
+produces new values. Requires that each stream has at least one value before anything is published to the result
+
+##### C#
+```csharp
+Subject<string> a = new Subject<string>();
+Subject<string> b = new Subject<string>();
+
+Observable.CombineLatest(a,b,(s, s1) => $"({s},{s1})")
+ .Subscribe(WriteLine);
+
+a.OnNext("a");
+a.OnNext("b");
+b.OnNext("1");
+b.OnNext("2");
+a.OnNext("c");
+```
+##### Marble
+![Combine Latest](Resources/CombineLatest.png)
+
+## Zip
+Pairs together values from two streams. 
+
+##### C#
+```csharp
+Subject<string> a = new Subject<string>();
+Subject<string> b = new Subject<string>();
+
+Observable.Zip(a,b,(s, s1) => $"({s},{s1})")
+ .Subscribe(WriteLine);
+
+a.OnNext("a");
+a.OnNext("b");
+b.OnNext("1");
+b.OnNext("2");
+a.OnNext("c");
+```
+##### Marble
+![Zip](Resources/Zip.png)
+
+## And/Then/When
+Pairs together values from ,multiple streams. 
+
+##### C#
+```csharp
+IObservable<int> a = Observable.Range(1, 3);
+IObservable<int> b = Observable.Range(1, 3).Select(x => x * 2);
+IObservable<int> c = Observable.Range(1, 3).Select(x => x * 3);
+
+Observable
+ .When(a
+    .And(b)
+    .And(c)
+    .Then((x, y, z) => (x, y, z)))
+ .Subscribe(x => WriteLine(x));
+
+// Verbose form to show what is happening
+Pattern<int, int> pattern1 = a.And(b);
+Pattern<int, int, int> pattern2 = pattern1.And(c);
+Plan<(int, int, int)> then = pattern2.Then((i, i1, i2) => (i, i1, i2));
+IObservable<(int, int, int)> observable = Observable.When(then);
+            observable.Subscribe(x => WriteLine(x));
+```
+##### Marble
+![And Then When](Resources/AndThenWhen.png)
+
+
 ## Buffer(int)
 Consider the following code which highlights the use of **Buffer(int)** to transform an observable sequence of int into an observable sequence of list of int. We consider each List<int> a buffer. 
 

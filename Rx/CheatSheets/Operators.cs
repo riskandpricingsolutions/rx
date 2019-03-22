@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reactive.Concurrency;
+using System.Reactive.Joins;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
@@ -141,6 +142,78 @@ namespace CheatSheets
             Observable.Range(0, 2).Concat(Observable.Range(5, 2))
                 .Subscribe(WriteLine);
         }
+
+        [Test]
+        public void CombineLatest()
+        {
+            Subject<string> a = new Subject<string>();
+            Subject<string> b = new Subject<string>();
+
+            Observable.CombineLatest(a,b,(s, s1) => $"({s},{s1})")
+                .Subscribe(WriteLine);
+
+            a.OnNext("a");
+            a.OnNext("b");
+            b.OnNext("1");
+            b.OnNext("2");
+            a.OnNext("c");
+        }
+
+        [Test]
+        public void Zip()
+        {
+            Subject<string> a = new Subject<string>();
+            Subject<string> b = new Subject<string>();
+
+            Observable.Zip(a, b, (s, s1) => $"({s},{s1})")
+                .Subscribe(WriteLine);
+
+            a.OnNext("a");
+            a.OnNext("b");
+            b.OnNext("1");
+            b.OnNext("2");
+            a.OnNext("c");
+        }
+
+        [Test]
+        public void ZipChaining()
+        {
+            // We can Zip more than two streams together by chanining
+            // multiple Zips as below. We can also use And/Then/When
+            IObservable<int> a = Observable.Range(1, 3);
+            IObservable<int> b = Observable.Range(1, 3).Select(x=>x*2 );
+            IObservable<int> c = Observable.Range(1, 3).Select(x=>x*3 );
+
+            a
+                .Zip(b, (a1, b1) => (a1, b1))
+                .Zip(c, (tuple, c1) => (tuple.Item1, tuple.Item2, c1))
+                .Subscribe(res=>WriteLine(res));
+        }
+
+
+        [Test]
+        public void AndThenWhen()
+        {
+            // Rather than multiple zips we can use AndThen
+            IObservable<int> a = Observable.Range(1, 3);
+            IObservable<int> b = Observable.Range(1, 3).Select(x => x * 2);
+            IObservable<int> c = Observable.Range(1, 3).Select(x => x * 3);
+
+            Observable
+                .When(a
+                    .And(b)
+                    .And(c)
+                    .Then((x, y, z) => (x, y, z)))
+                .Subscribe(x => WriteLine(x));
+
+            // Verbose form to show what is happening
+            Pattern<int, int> pattern1 = a.And(b);
+            Pattern<int, int, int> pattern2 = pattern1.And(c);
+            Plan<(int, int, int)> then = pattern2.Then((i, i1, i2) => (i, i1, i2));
+            IObservable<(int, int, int)> observable = Observable.When(then);
+            observable.Subscribe(x => WriteLine(x));
+        }
+
         [Test]
         public void SelectMany()
         {
