@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reactive.Concurrency;
+using System.Reactive.Disposables;
 using System.Reactive.Joins;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -15,6 +16,54 @@ namespace CheatSheets
     [TestFixture]
     public class Operators
     {
+        [Test]
+        public void Create()
+        {
+            IObservable<int> s =
+                Observable.Create<int>(observer =>
+                {
+                    observer.OnNext(1);
+                    observer.OnNext(2);
+                    observer.OnNext(3);
+                    observer.OnCompleted();
+                    return Disposable.Empty;
+                });
+
+            s.Subscribe(i => WriteLine($"OnNext({i})"), 
+                () => WriteLine("OnCompleted"));
+        }
+
+        [Test]
+        public void Empty()
+        {
+            IObservable<int> s =
+                Observable.Empty<int>();
+
+            s.Subscribe(i => WriteLine($"OnNext({i})"),
+                () => WriteLine("OnCompleted"));
+        }
+
+        [Test]
+        public void Return()
+        {
+            IObservable<int> s =
+                Observable.Return(5);
+
+            s.Subscribe(i => WriteLine($"OnNext({i})"),
+                () => WriteLine("OnCompleted"));
+        }
+
+        [Test]
+        public void Throw()
+        {
+            IObservable<int> s =
+                Observable.Throw<int>(new Exception("An exception"));
+
+            s.Subscribe(i => WriteLine($"OnNext({i})"),
+                exception => WriteLine("OnException"),
+                () => WriteLine("OnCompleted"));
+        }
+
         [Test]
         public void OperatorCheatSheet()
         {

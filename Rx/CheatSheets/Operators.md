@@ -1,5 +1,55 @@
 ﻿# Operator Cheet Sheet
 
+## Creational Methods
+
+### Observable.Create
+##### C#
+```csharp
+IObservable<int> s =
+ Observable.Create<int>(observer =>
+ {
+   observer.OnNext(1);
+   observer.OnNext(2);
+   observer.OnNext(3);
+   observer.OnCompleted();
+   return Disposable.Empty;
+ });
+
+ s.Subscribe(i => WriteLine($"OnNext({i})"), 
+  () => WriteLine("OnCompleted"));
+```
+
+### Observable.Empty
+##### C#
+
+```csharp
+IObservable<int> s =
+  Observable.Empty<int>();
+
+s.Subscribe(i => WriteLine($"OnNext({i})"),
+  () => WriteLine("OnCompleted"));
+```
+### Observable.Return
+##### C#
+```csharp
+IObservable<int> s =
+  Observable.Return(5);
+
+s.Subscribe(i => WriteLine($"OnNext({i})"),
+  () => WriteLine("OnCompleted"));
+```
+
+### Observable.Throw
+##### C#
+```csharp
+IObservable<int> s =
+  Observable.Throw<int>(new Exception("An exception"));
+s.Subscribe(i => WriteLine($"OnNext({i})"),
+  exception => WriteLine("OnException"),
+  () => WriteLine("OnCompleted"));
+      
+```
+
 ## Observable.Return(T)
 Returns an observable consisting of single value and then calls OnCompleted
 ##### C#
