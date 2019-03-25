@@ -1,74 +1,5 @@
-﻿# Operator Cheet Sheet
+﻿
 
-## Creational Methods
-
-### Observable.Create
-##### C#
-```csharp
-IObservable<int> s =
- Observable.Create<int>(observer =>
- {
-   observer.OnNext(1);
-   observer.OnNext(2);
-   observer.OnNext(3);
-   observer.OnCompleted();
-   return Disposable.Empty;
- });
-
- s.Subscribe(i => WriteLine($"OnNext({i})"), 
-  () => WriteLine("OnCompleted"));
-```
-
-### Observable.Empty
-##### C#
-
-```csharp
-IObservable<int> s =
-  Observable.Empty<int>();
-
-s.Subscribe(i => WriteLine($"OnNext({i})"),
-  () => WriteLine("OnCompleted"));
-```
-### Observable.Return
-##### C#
-```csharp
-IObservable<int> s =
-  Observable.Return(5);
-
-s.Subscribe(i => WriteLine($"OnNext({i})"),
-  () => WriteLine("OnCompleted"));
-```
-
-### Observable.Throw
-##### C#
-```csharp
-IObservable<int> s =
-  Observable.Throw<int>(new Exception("An exception"));
-s.Subscribe(i => WriteLine($"OnNext({i})"),
-  exception => WriteLine("OnException"),
-  () => WriteLine("OnCompleted"));
-      
-```
-
-## Observable.Return(T)
-Returns an observable consisting of single value and then calls OnCompleted
-##### C#
-```csharp
-Observable.Return(1)
- .Subscribe(WriteLine, () => WriteLine("OnCompleted"));
-```
-##### Marble
-![Return(T)](Resources/Return(T).png)
-
-## Observable.Range(int,int)
-Returns an observable over a sequence of consecutive integers
-##### C#
-```csharp
-Observable.Range(1,3)
- .Subscribe(WriteLine, () => WriteLine("OnCompleted"));
-```
-##### Marble
-![Range(Int,Int)](Resources/Range(int,int).png)
 
 ## Observable.Repeat(TResult,int)
 Repeat the give value a specified number of times
@@ -95,27 +26,7 @@ Observable.Range(0, 2)
 ##### Marble
 ![Repeat(T Result,Int)](Resources/Repeat(TResult,int).png)
 
-## Observable.Generate
-Supports the creation of more complex sequences of event
-##### C#
-```csharp
-AutoResetEvent h = new AutoResetEvent(false);
 
-WriteLine("Generate");
-Observable
-	.Generate(
-		0,
-		i => i < 3,
-		i => ++i,
-		i => $"Value {i}",
-		i => TimeSpan.FromSeconds(i))
-	.SubscribeOn(DefaultScheduler.Instance)
-    .ObserveOn(DefaultScheduler.Instance)
-    .Subscribe(WriteLine, () => h.Set());
-
-h.WaitOne();
-```
-##### Marble
 
 ## Scan(TAccumulate,Func<TAccumulate, TSource, TAccumulate>)
 An accumulator which produces a sequence of accumulated values

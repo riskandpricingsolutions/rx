@@ -7,6 +7,7 @@ using System.Reactive.Joins;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
+using System.Threading.Tasks;
 using NUnit.Framework;
 using RiskAndPricingSolutions.Rx.SharedResources.BasicImplementations;
 using static System.Console;
@@ -65,6 +66,100 @@ namespace CheatSheets
         }
 
         [Test]
+        public void Generate()
+        {
+            IObservable<int> s =
+                Observable.Generate(0, i => i < 5, i => i + 1, i => i);
+
+            s.Subscribe(i => WriteLine($"OnNext({i})"),
+                exception => WriteLine("OnException"),
+                () => WriteLine("OnCompleted"));
+        }
+
+        [Test]
+        public Task Interval()
+        {
+            TaskCompletionSource<string> tcs = new TaskCompletionSource<string>();
+
+            Observable
+                .Interval(TimeSpan.FromSeconds(0.25))
+                .Take(4)
+                .ObserveOn(Scheduler.Default)
+                .Subscribe(l => WriteLine($"{l}"),
+                    () => tcs.SetResult(null));
+
+            return tcs.Task;
+        }
+
+        [Test]
+        public Task Timer()
+        {
+            TaskCompletionSource<string> tcs = new TaskCompletionSource<string>();
+
+            Observable
+                .Timer(TimeSpan.FromSeconds(1))
+                .ObserveOn(Scheduler.Default)
+                .Subscribe(l => WriteLine($"{l}"),
+                    () => tcs.SetResult(null));
+
+            return tcs.Task;
+        }
+
+        [Test]
+        public Task Timer2()
+        {
+            TaskCompletionSource<string> tcs = new TaskCompletionSource<string>();
+
+            Observable
+                .Timer(TimeSpan.FromSeconds(2),TimeSpan.FromSeconds(0.1))
+                .Take(4)
+                .ObserveOn(Scheduler.Default)
+                .Subscribe(l => WriteLine($"{l}"),
+                    () => tcs.SetResult(null));
+
+            return tcs.Task;
+        }
+
+        [Test]
+        public void Generate2()
+        {
+            AutoResetEvent h = new AutoResetEvent(false);
+
+            WriteLine("Generate");
+            Observable.Generate(
+                    0,
+                    i => i < 3,
+                    i => ++i,
+                    i => $"Value {i}",
+                    i => TimeSpan.FromSeconds(i))
+                .SubscribeOn(DefaultScheduler.Instance)
+                .ObserveOn(DefaultScheduler.Instance)
+                .Subscribe(WriteLine, () => h.Set());
+
+            h.WaitOne();
+        }
+
+        [Test]
+        public void StartFromAction()
+        {
+            Action a = () => { };
+            Observable
+                .Start(a)
+                .Subscribe(unit => WriteLine($"OnNext({unit})"),
+                    () => WriteLine("OnCompleted"));
+        }
+
+        [Test]
+        public void StartFromFunc()
+        {
+            Func<int> a = () => 5;
+            Observable
+                .Start(a)
+                .Subscribe(unit => WriteLine($"OnNext({unit})"),
+                    () => WriteLine("OnCompleted"));
+        }
+
+        [Test]
         public void OperatorCheatSheet()
         {
             // Observable.Return
@@ -87,24 +182,7 @@ namespace CheatSheets
 
         }
 
-        [Test]
-        public void Generate()
-        {
-            AutoResetEvent h = new AutoResetEvent(false);
 
-            WriteLine("Generate");
-            Observable.Generate(
-                    0,
-                    i => i < 3,
-                    i => ++i,
-                    i => $"Value {i}",
-                    i => TimeSpan.FromSeconds(i))
-                .SubscribeOn(DefaultScheduler.Instance)
-                .ObserveOn(DefaultScheduler.Instance)
-                .Subscribe(WriteLine, () => h.Set());
-
-            h.WaitOne();
-        }
 
         [Test]
         public void Scan()
