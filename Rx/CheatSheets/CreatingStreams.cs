@@ -1,7 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Reactive.Threading.Tasks;
 using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -153,5 +157,46 @@ namespace RiskAndPricingSolutions.Rx.CheatSheets
                 .Subscribe(unit => WriteLine($"OnNext({unit})"),
                     () => WriteLine("OnCompleted"));
         }
+
+        [Test]
+        public void FromEvent()
+        {
+            IObservable<EventPattern<EventArgs>> obs
+                = Observable
+                    .FromEventPattern<EventArgs>(h => MyEvent += h, h => MyEvent -= h);
+
+            obs.Subscribe(x => WriteLine(x.EventArgs));
+            MyEvent?.Invoke(this,new EventArgs());
+        }
+
+        [Test]
+        public void FromTask()
+        {
+            TaskCompletionSource<string> tcs = new TaskCompletionSource<string>();
+            tcs.SetResult("Value");
+            tcs
+                .Task
+                .ToObservable()
+                .Subscribe(x => WriteLine($"OnNext({x})"), () => WriteLine("OnCompleted"));
+            WriteLine("Subscribed to already completed task\n");
+
+            Task
+                .Run(() => "Value")
+                .ToObservable()
+                .Subscribe(x => WriteLine($"OnNext({x})"), () => WriteLine("OnCompleted"));
+            WriteLine("Subscribed to running task");
+        }
+
+        [Test]
+        public void FromObservable()
+        {
+            Enumerable
+                .Range(0,3)
+                .ToObservable()
+                .Subscribe(x => WriteLine($"OnNext({x})"), () => WriteLine("OnCompleted"));
+        }
+
+
+        public event EventHandler<EventArgs> MyEvent;
     }
 }

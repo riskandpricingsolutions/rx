@@ -1,4 +1,4 @@
-﻿# Operator Cheet Sheet
+﻿# Producing Streams CheatSheet
 
 ## Creational Methods
 
@@ -15,11 +15,13 @@ IObservable<int> s =
    return Disposable.Empty;
  });
 
- s.Subscribe(i => WriteLine($"OnNext({i})"), 
-  () => WriteLine("OnCompleted"));
+ s.Subscribe(i => 
+	WriteLine($"OnNext({i})"), 
+		() => WriteLine("OnCompleted"));
 ```
 
 ### Observable.Empty
+Returns an empty stream which simply invokes OnCompleted to end the sequence
 ##### C#
 
 ```csharp
@@ -27,10 +29,10 @@ IObservable<int> s =
   Observable.Empty<int>();
 
 s.Subscribe(i => WriteLine($"OnNext({i})"),
-  () => WriteLine("OnCompleted"));
+	() => WriteLine("OnCompleted"));
 ```
 ### Observable.Return(T)
-Returns an observable consisting of single value and then calls OnCompleted
+Returns a stream consisting of a single value. 
 ##### C#
 ```csharp
 Observable.Return(1)
@@ -38,6 +40,7 @@ Observable.Return(1)
 ```
 
 ### Observable.Throw
+Returns a stream which calls OnError and then returns
 ##### C#
 ```csharp
 IObservable<int> s =
@@ -47,8 +50,8 @@ s.Subscribe(i => WriteLine($"OnNext({i})"),
   () => WriteLine("OnCompleted"));
       
 ```
-## Unfold
-Generate can be used to produce all the other unfold methods in this section
+## Unfold Methods
+An unfold can be used to produce a possibly infinite sequene. Generate is the root Rx unfold method. The other unfold methods such as Range, Interval and Timer could be produced using Generate. 
 ### Observable.Generate
 Supports the creation of more complex sequences of event. 
 ##### C#
@@ -115,7 +118,8 @@ Observable
 
 ```
 
-## Creating Observables from other paradigms
+## Transitioning from other API's
+
 We can use the methods of Rx to create Observables form other .NET types. 
 ### Observable.Start(Action)
 Creates a single value observable from an Action delegate
@@ -139,4 +143,44 @@ Observable
   .Subscribe(unit => WriteLine($"OnNext({unit})"),
                     () => WriteLine("OnCompleted"));
 
+```
+
+### Observable.FromEventPattern
+Creates Observables from standard .NET events
+### C#
+```csharp
+IObservable<EventPattern<EventArgs>> obs
+ = Observable
+    .FromEventPattern<EventArgs>(h => MyEvent += h, h => MyEvent -= h);
+
+obs.Subscribe(x => WriteLine(x.EventArgs));
+MyEvent?.Invoke(this,new EventArgs());
+```
+
+### Task.ToObservable
+Creates Observables from standard tasks
+### C#
+```csharp
+TaskCompletionSource<string> tcs = new TaskCompletionSource<string>();
+ tcs.SetResult("Value");
+tcs
+ .Task
+ .ToObservable()
+ .Subscribe(x => WriteLine($"OnNext({x})"), () => WriteLine("OnCompleted"));
+WriteLine("Subscribed to already completed task\n");
+
+Task
+ .Run(() => "Value")
+ .ToObservable()
+ .Subscribe(x => WriteLine($"OnNext({x})"), () => WriteLine("OnCompleted"));
+WriteLine("Subscribed to running task");
+```
+
+### IEnumerable<T>.ToObservable
+### C#
+```csharp
+Enumerable
+ .Range(0,3)
+ .ToObservable()
+ .Subscribe(x => WriteLine($"OnNext({x})"), () => WriteLine("OnCompleted"));
 ```
