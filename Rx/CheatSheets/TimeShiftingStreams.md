@@ -275,8 +275,6 @@ Delayed 3   3.1114934
 
 *Marble Diagram*
 
-![Buffer(Timespan,Int)](Resources/Buffer(Timespan,int).png)
-
 ![Delay(Time Span)](Resources/Delay(TimeSpan).png)
 
 
