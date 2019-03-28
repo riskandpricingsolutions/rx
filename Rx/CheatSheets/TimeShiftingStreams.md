@@ -132,12 +132,35 @@ Observable
 
 ![Buffer(Timespan,Time Span)](Resources/Buffer(Timespan,TimeSpan).png)
 
+#### Skipping Elements
+*C# Sample Code*
+```csharp    
+EventWaitHandle ewh = new AutoResetEvent(false);
+Observable
+ .Interval(TimeSpan.FromSeconds(0.3))
+ .Take(6)
+ .Buffer(TimeSpan.FromSeconds(0.4), TimeSpan.FromSeconds(1.0))
+ .Subscribe(ints => WriteLine(string.Join(",", ints)), () => ewh.Set());
+
+ewh.WaitOne();
+```
+
+*Output*
+
+```
+0
+3
+```
+
+*Marble Diagram*
+
+![Buffer(Timespan,Time Span)Skipping](Resources/Buffer(Timespan,TimeSpan)Skipping.png)
 
 
-### Buffer(Func<IObservable<TClosingSelector>> ClosingSelector)
-Whenever we publish a value from the closing selector observable the buffer will take whatever it has and flush it out. It does not really seem to matter what the value or type of the buffer close event is
+### Buffer(Func<IObservable<TClosingSelector>> closingSelector)
+This form uses a separate observable sequence that produces values in order to flush buffers. Each time a element is published by this observable the current buffer is flushed through
 
-##### C#
+*C# Sample Code*
 ```csharp
 EventWaitHandle latch = new AutoResetEvent(false);
 
@@ -155,12 +178,19 @@ var closing = Observable
 
 latch.WaitOne();
 ```
-##### Marble Diagram
+*Output*
+
+```
+0,1,2
+3,4,5
+```
+*Marble Diagram*
+
 ![Buffer(Func Observable)](Resources/Buffer(FuncObservable).png)
 
-### Buffer(IObservable<TBufferOpening> bufferOpenings, Func<TBufferOpening, IObservable<TBufferClosing>> bufferClosingSelector)
-This form of the function uses sequences to determin the buffer openings and closings
-##### C#
+### Buffer(IObservable&lt;TBufferOpening&gt; bufferOpenings, Func<TBufferOpening, IObservable&lt;TBufferOpening&gt;> bufferClosingSelector)
+The bufferOpenings selector is used to publish events which determine when buffers are opened. The bufferClosingSelector takes the value from the buffer opening event and uses it to generate the buffer closing event.
+*C# Sample Code*
 ```csharp
 EventWaitHandle latch = new AutoResetEvent(false);
 
@@ -182,11 +212,72 @@ obs
 
 latch.WaitOne();
 ```
-##### Marble Diagram
+*Marble Diagram*
+
 ![B Uffer Open Close](Resources/BUfferOpenClose.png)
 
+### Buffer(Timespan timeSpan, int count)
+Sometimes it is useful to be able to buffer by both count and timeframe. A buffer is closed and a new one started when either the maximum buffer size is reached or the timespan elapses. This means the buffer does not get too big and also data never gets stale 
+*C# Sample Code*
+```csharp
+EventWaitHandle latch = new AutoResetEvent(false);
 
+Observable
+ .Interval(TimeSpan.FromSeconds(0.1))
+ .Take(5)
+ .Concat(Observable.Interval(TimeSpan.FromSeconds(0.5)).Take(4))
+ .Buffer(TimeSpan.FromSeconds(1.0),5)
+ .Subscribe(ints => WriteLine($"({string.Join(",", ints)})"), () => latch.Set());
 
+latch.WaitOne();
+```
+*Output*
+
+```
+(0,1,2,3,4)
+(0)
+(1,2)
+(3)
+```
+
+*Marble Diagram*
+
+![Buffer(Timespan,Int)](Resources/Buffer(Timespan,int).png)
+
+### Delay(TimeSpan timeSpan)
+Simply delays a sequence by a specified TimeSpan. The times between elements remain the same.
+
+*C# Sample Code*
+```csharp
+DateTime now = DateTime.Now;
+EventWaitHandle latch = new AutoResetEvent(false);
+
+var source = Observable.Interval(TimeSpan.FromSeconds(0.5)).Take(4);
+var delays = source.Delay(TimeSpan.FromSeconds(1.0));
+
+source.Subscribe(l => WriteLine($"Original {l}   {(DateTime.Now - now).TotalSeconds}"));
+delays.Subscribe(l => WriteLine($"Delayed {l}   {(DateTime.Now - now).TotalSeconds}"),()=>latch.Set());
+
+latch.WaitOne();
+```
+*Output*
+
+```
+Original 0   0.5671419
+Original 1   1.0641751
+Original 2   1.5644976
+Delayed 0   1.6014948
+Original 3   2.0791571
+Delayed 1   2.0985018
+Delayed 2   2.6119969
+Delayed 3   3.1114934
+```
+
+*Marble Diagram*
+
+![Buffer(Timespan,Int)](Resources/Buffer(Timespan,int).png)
+
+![Delay(Time Span)](Resources/Delay(TimeSpan).png)
 
 
 

@@ -2,7 +2,6 @@
 using System.Reactive.Linq;
 using System.Threading;
 using NUnit.Framework;
-using RiskAndPricingSolutions.Rx.SharedResources.BasicImplementations;
 using static System.Console;
 
 namespace RiskAndPricingSolutions.Rx.CheatSheets
@@ -51,7 +50,7 @@ namespace RiskAndPricingSolutions.Rx.CheatSheets
         [Test]
         public void BufferWithTimeSpanAndTimeShift1()
         {
-            // Start a new buffer every 0.5 seconds and each buffer is 1.0 second long
+            // Start a new buffer every 0.4 seconds and each buffer is 1.0 second long
             // to give overlapping behaviour
             EventWaitHandle ewh = new AutoResetEvent(false);
             Observable
@@ -63,7 +62,20 @@ namespace RiskAndPricingSolutions.Rx.CheatSheets
             ewh.WaitOne();
         }
 
+        [Test]
+        public void BufferWithTimeSpanAndTimeShift2()
+        {
+            // Start a new buffer every 1.0 seconds and each buffer is 0.4 second long
+            // to get skipping behaviour
+            EventWaitHandle ewh = new AutoResetEvent(false);
+            Observable
+                .Interval(TimeSpan.FromSeconds(0.3))
+                .Take(6)
+                .Buffer(TimeSpan.FromSeconds(0.4), TimeSpan.FromSeconds(1.0))
+                .Subscribe(ints => WriteLine(string.Join(",", ints)), () => ewh.Set());
 
+            ewh.WaitOne();
+        }
 
         [Test]
         public void BufferWithClosingSelector()
@@ -104,6 +116,21 @@ namespace RiskAndPricingSolutions.Rx.CheatSheets
 
             obs
                 .Buffer(opening, i => closing)
+                .Subscribe(ints => WriteLine($"({string.Join(",", ints)})"), () => latch.Set());
+
+            latch.WaitOne();
+        }
+
+        [Test]
+        public void BufferByCountAndTimeSpan()
+        {
+            EventWaitHandle latch = new AutoResetEvent(false);
+
+            Observable
+                .Interval(TimeSpan.FromSeconds(0.1))
+                .Take(5)
+                .Concat(Observable.Interval(TimeSpan.FromSeconds(0.5)).Take(4))
+                .Buffer(TimeSpan.FromSeconds(1.0),5)
                 .Subscribe(ints => WriteLine($"({string.Join(",", ints)})"), () => latch.Set());
 
             latch.WaitOne();
@@ -158,6 +185,21 @@ namespace RiskAndPricingSolutions.Rx.CheatSheets
             obs
                 .Buffer(opening, i => closing)
                 .Subscribe(ints => WriteLine($"({string.Join(",", ints)})"), () => latch.Set());
+
+            latch.WaitOne();
+        }
+
+        [Test]
+        public void Delay()
+        {
+            DateTime now = DateTime.Now;
+            EventWaitHandle latch = new AutoResetEvent(false);
+
+            var source = Observable.Interval(TimeSpan.FromSeconds(0.5)).Take(4);
+            var delays = source.Delay(TimeSpan.FromSeconds(1.0));
+
+            source.Subscribe(l => WriteLine($"Original {l}   {(DateTime.Now - now).TotalSeconds}"));
+            delays.Subscribe(l => WriteLine($"Delayed {l}   {(DateTime.Now - now).TotalSeconds}"),()=>latch.Set());
 
             latch.WaitOne();
         }

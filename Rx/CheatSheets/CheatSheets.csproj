@@ -95,10 +95,14 @@
     <Content Include="Resources\Buffer%28int,int%29.png" />
     <Content Include="Resources\Buffer%28int,int%29Overlap.png" />
     <Content Include="Resources\Buffer%28TimeSpan%29.png" />
+    <Content Include="Resources\Buffer%28Timespan,int%29.png" />
+    <Content Include="Resources\Buffer%28Timespan,TimeSpan%29 Skipping.png" />
     <Content Include="Resources\Buffer%28Timespan,TimeSpan%29.png" />
+    <Content Include="Resources\Buffer%28Timespan,TimeSpan%29Skipping.png" />
     <Content Include="Resources\BUfferOpenClose.png" />
     <Content Include="Resources\CombineLatest.png" />
     <Content Include="Resources\Concat.png" />
+    <Content Include="Resources\Delay%28TimeSpan%29.png" />
     <Content Include="Resources\Merge.png" />
     <Content Include="Resources\Range%28int,int%29.png" />
     <Content Include="Resources\Repeat%28int%29.png" />
