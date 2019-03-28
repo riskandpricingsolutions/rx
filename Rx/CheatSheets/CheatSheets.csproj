@@ -90,9 +90,12 @@
     <Content Include="Resources\Amb.png" />
     <Content Include="Resources\AndThenWhen.png" />
     <Content Include="Resources\Buffer%28FuncObservable%29.png" />
+    <Content Include="Resources\Buffer%28FuncObservable,Observable%29.png" />
     <Content Include="Resources\Buffer%28int%29.png" />
     <Content Include="Resources\Buffer%28int,int%29.png" />
     <Content Include="Resources\Buffer%28int,int%29Overlap.png" />
+    <Content Include="Resources\Buffer%28TimeSpan%29.png" />
+    <Content Include="Resources\Buffer%28Timespan,TimeSpan%29.png" />
     <Content Include="Resources\BUfferOpenClose.png" />
     <Content Include="Resources\CombineLatest.png" />
     <Content Include="Resources\Concat.png" />

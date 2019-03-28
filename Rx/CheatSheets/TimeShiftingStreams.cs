@@ -20,7 +20,7 @@ namespace RiskAndPricingSolutions.Rx.CheatSheets
         }
 
         [Test]
-        public void BufferWithCountAndSkipSkipping()
+        public void BufferWithCountAndSkip1()
         {
             Observable.Range(1, 5)
                 .Buffer(2, 3)
@@ -28,7 +28,7 @@ namespace RiskAndPricingSolutions.Rx.CheatSheets
         }
 
         [Test]
-        public void BufferWithCountAndSkipOverlapping()
+        public void BufferWithCountAndSkip2()
         {
             Observable.Range(1, 5)
                 .Buffer(3, 2)
@@ -36,10 +36,34 @@ namespace RiskAndPricingSolutions.Rx.CheatSheets
         }
 
         [Test]
-        public void BufferOpeningClosingSelector()
+        public void BufferWithTimeSpan()
         {
-          
+            EventWaitHandle ewh = new AutoResetEvent(false);
+            Observable
+                .Interval(TimeSpan.FromSeconds(0.3))
+                .Take(6)
+                .Buffer(TimeSpan.FromSeconds(1.0))
+                .Subscribe(ints => WriteLine(string.Join(",", ints)),()=>ewh.Set());
+
+            ewh.WaitOne();
         }
+
+        [Test]
+        public void BufferWithTimeSpanAndTimeShift1()
+        {
+            // Start a new buffer every 0.5 seconds and each buffer is 1.0 second long
+            // to give overlapping behaviour
+            EventWaitHandle ewh = new AutoResetEvent(false);
+            Observable
+                .Interval(TimeSpan.FromSeconds(0.3))
+                .Take(6)
+                .Buffer(TimeSpan.FromSeconds(1.0), TimeSpan.FromSeconds(0.4))
+                .Subscribe(ints => WriteLine(string.Join(",", ints)), () => ewh.Set());
+
+            ewh.WaitOne();
+        }
+
+
 
         [Test]
         public void BufferWithClosingSelector()
