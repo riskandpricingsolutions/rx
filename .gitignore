@@ -1,0 +1,7 @@
+*.exe
+*.suo
+*.DotSettings
+bin/
+obj/
+.vs/
+/Rx/packages

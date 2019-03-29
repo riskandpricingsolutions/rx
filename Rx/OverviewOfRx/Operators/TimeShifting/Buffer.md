@@ -1,6 +1,4 @@
-﻿# Time Shifting CheatSheet
-
-## Buffering 
+﻿# Buffering 
 The various overloads of Buffer enable one to group together elements from an input stream. The resulting groups are called buffers. The basic idea then is to take a stream IObservable<T> and produce a stream IObservable<IList<T>>. Buffers can be perfectly contiguous with every source element existing in one and only one result buffer; skipping with some source elements being completely left out of the result bugffers or overlapping where some source elements make it into more than once destination buffer.
 
 *Buffering Behaviour*
@@ -243,40 +241,4 @@ latch.WaitOne();
 *Marble Diagram*
 
 ![Buffer(Timespan,Int)](Resources/Buffer(Timespan,int).png)
-
-### Delay(TimeSpan timeSpan)
-Simply delays a sequence by a specified TimeSpan. The times between elements remain the same.
-
-*C# Sample Code*
-```csharp
-DateTime now = DateTime.Now;
-EventWaitHandle latch = new AutoResetEvent(false);
-
-var source = Observable.Interval(TimeSpan.FromSeconds(0.5)).Take(4);
-var delays = source.Delay(TimeSpan.FromSeconds(1.0));
-
-source.Subscribe(l => WriteLine($"Original {l}   {(DateTime.Now - now).TotalSeconds}"));
-delays.Subscribe(l => WriteLine($"Delayed {l}   {(DateTime.Now - now).TotalSeconds}"),()=>latch.Set());
-
-latch.WaitOne();
-```
-*Output*
-
-```
-Original 0   0.5671419
-Original 1   1.0641751
-Original 2   1.5644976
-Delayed 0   1.6014948
-Original 3   2.0791571
-Delayed 1   2.0985018
-Delayed 2   2.6119969
-Delayed 3   3.1114934
-```
-
-*Marble Diagram*
-
-![Delay(Time Span)](Resources/Delay(TimeSpan).png)
-
-
-
 

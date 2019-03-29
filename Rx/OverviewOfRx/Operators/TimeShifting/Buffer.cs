@@ -2,12 +2,11 @@
 using System.Reactive.Linq;
 using System.Threading;
 using NUnit.Framework;
-using static System.Console;
 
-namespace RiskAndPricingSolutions.Rx.CheatSheets
+namespace RiskAndPricingSolutions.Rx.Expositional.OverviewOfRx.Operators.TimeShifting
 {
     [TestFixture]
-    public class TimeShiftingStreams
+    public class Buffer
     {
         [Test]
         public void BufferWithCount()
@@ -15,7 +14,7 @@ namespace RiskAndPricingSolutions.Rx.CheatSheets
             Observable
                 .Range(0, 5)
                 .Buffer(2)
-                .Subscribe(ints => WriteLine(string.Join(",", ints)));
+                .Subscribe(ints => Console.WriteLine(string.Join(",", ints)));
         }
 
         [Test]
@@ -23,7 +22,7 @@ namespace RiskAndPricingSolutions.Rx.CheatSheets
         {
             Observable.Range(1, 5)
                 .Buffer(2, 3)
-                .Subscribe(ints => WriteLine(string.Join(",", ints)));
+                .Subscribe(ints => Console.WriteLine(string.Join(",", ints)));
         }
 
         [Test]
@@ -31,7 +30,7 @@ namespace RiskAndPricingSolutions.Rx.CheatSheets
         {
             Observable.Range(1, 5)
                 .Buffer(3, 2)
-                .Subscribe(ints => WriteLine(string.Join(",", ints)));
+                .Subscribe(ints => Console.WriteLine(string.Join(",", ints)));
         }
 
         [Test]
@@ -42,7 +41,7 @@ namespace RiskAndPricingSolutions.Rx.CheatSheets
                 .Interval(TimeSpan.FromSeconds(0.3))
                 .Take(6)
                 .Buffer(TimeSpan.FromSeconds(1.0))
-                .Subscribe(ints => WriteLine(string.Join(",", ints)),()=>ewh.Set());
+                .Subscribe(ints => Console.WriteLine(string.Join(",", ints)),()=>ewh.Set());
 
             ewh.WaitOne();
         }
@@ -57,7 +56,7 @@ namespace RiskAndPricingSolutions.Rx.CheatSheets
                 .Interval(TimeSpan.FromSeconds(0.3))
                 .Take(6)
                 .Buffer(TimeSpan.FromSeconds(1.0), TimeSpan.FromSeconds(0.4))
-                .Subscribe(ints => WriteLine(string.Join(",", ints)), () => ewh.Set());
+                .Subscribe(ints => Console.WriteLine(string.Join(",", ints)), () => ewh.Set());
 
             ewh.WaitOne();
         }
@@ -72,7 +71,7 @@ namespace RiskAndPricingSolutions.Rx.CheatSheets
                 .Interval(TimeSpan.FromSeconds(0.3))
                 .Take(6)
                 .Buffer(TimeSpan.FromSeconds(0.4), TimeSpan.FromSeconds(1.0))
-                .Subscribe(ints => WriteLine(string.Join(",", ints)), () => ewh.Set());
+                .Subscribe(ints => Console.WriteLine(string.Join(",", ints)), () => ewh.Set());
 
             ewh.WaitOne();
         }
@@ -92,7 +91,7 @@ namespace RiskAndPricingSolutions.Rx.CheatSheets
 
             obs
                 .Buffer(closing)
-                .Subscribe(ints => WriteLine(string.Join(",", ints)), () => latch.Set());
+                .Subscribe(ints => Console.WriteLine(string.Join(",", ints)), () => latch.Set());
 
             latch.WaitOne();
         }
@@ -116,7 +115,7 @@ namespace RiskAndPricingSolutions.Rx.CheatSheets
 
             obs
                 .Buffer(opening, i => closing)
-                .Subscribe(ints => WriteLine($"({string.Join(",", ints)})"), () => latch.Set());
+                .Subscribe(ints => Console.WriteLine($"({string.Join(",", ints)})"), () => latch.Set());
 
             latch.WaitOne();
         }
@@ -131,7 +130,7 @@ namespace RiskAndPricingSolutions.Rx.CheatSheets
                 .Take(5)
                 .Concat(Observable.Interval(TimeSpan.FromSeconds(0.5)).Take(4))
                 .Buffer(TimeSpan.FromSeconds(1.0),5)
-                .Subscribe(ints => WriteLine($"({string.Join(",", ints)})"), () => latch.Set());
+                .Subscribe(ints => Console.WriteLine($"({string.Join(",", ints)})"), () => latch.Set());
 
             latch.WaitOne();
         }
@@ -145,18 +144,18 @@ namespace RiskAndPricingSolutions.Rx.CheatSheets
 
             var obs = Observable
                 .Interval(TimeSpan.FromSeconds(0.3))
-                .Do(l => WriteLine($"Value: {(DateTime.Now-now).TotalSeconds}"))
+                .Do(l => Console.WriteLine($"Value: {(DateTime.Now-now).TotalSeconds}"))
                 .Take(10);
 
             var closing = Observable
                 .Interval(TimeSpan.FromSeconds(1.0))
-                .Do(l => WriteLine($"Closing: Signal {(DateTime.Now - now).TotalSeconds}"))
+                .Do(l => Console.WriteLine($"Closing: Signal {(DateTime.Now - now).TotalSeconds}"))
                 .Take(2);
 
             obs
                 .Buffer(closing)
 
-                .Subscribe(ints => WriteLine($"Buffer: {string.Join(",", ints)} {(DateTime.Now - now).TotalSeconds}"),()=>latch.Set());
+                .Subscribe(ints => Console.WriteLine($"Buffer: {string.Join(",", ints)} {(DateTime.Now - now).TotalSeconds}"),()=>latch.Set());
 
             latch.WaitOne();
         }
@@ -169,39 +168,26 @@ namespace RiskAndPricingSolutions.Rx.CheatSheets
 
             var obs = Observable
                 .Interval(TimeSpan.FromSeconds(0.3))
-                .Do(l => WriteLine($"Value({l}): {(DateTime.Now - now).TotalSeconds}"))
+                .Do(l => Console.WriteLine($"Value({l}): {(DateTime.Now - now).TotalSeconds}"))
                 .Take(10);
 
             var opening = Observable
                 .Interval(TimeSpan.FromSeconds(0.7))
-                .Do(l => WriteLine($"Opening: Signal {(DateTime.Now - now).TotalSeconds}"))
+                .Do(l => Console.WriteLine($"Opening: Signal {(DateTime.Now - now).TotalSeconds}"))
                 .Take(2);
 
             var closing = Observable
                 .Timer(TimeSpan.FromSeconds(0.5))
-                .Do(l => WriteLine($"Closing: Signal {(DateTime.Now - now).TotalSeconds}"))
+                .Do(l => Console.WriteLine($"Closing: Signal {(DateTime.Now - now).TotalSeconds}"))
                 .Take(2);
 
             obs
                 .Buffer(opening, i => closing)
-                .Subscribe(ints => WriteLine($"({string.Join(",", ints)})"), () => latch.Set());
+                .Subscribe(ints => Console.WriteLine($"({string.Join(",", ints)})"), () => latch.Set());
 
             latch.WaitOne();
         }
 
-        [Test]
-        public void Delay()
-        {
-            DateTime now = DateTime.Now;
-            EventWaitHandle latch = new AutoResetEvent(false);
-
-            var source = Observable.Interval(TimeSpan.FromSeconds(0.5)).Take(4);
-            var delays = source.Delay(TimeSpan.FromSeconds(1.0));
-
-            source.Subscribe(l => WriteLine($"Original {l}   {(DateTime.Now - now).TotalSeconds}"));
-            delays.Subscribe(l => WriteLine($"Delayed {l}   {(DateTime.Now - now).TotalSeconds}"),()=>latch.Set());
-
-            latch.WaitOne();
-        }
+       
     }
 }
