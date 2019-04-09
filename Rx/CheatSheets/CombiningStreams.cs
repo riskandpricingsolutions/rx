@@ -10,62 +10,6 @@ namespace RiskAndPricingSolutions.Rx.CheatSheets
     [TestFixture]
     public class CombiningStreams
     {
-        [Test]
-        public void Concat()
-        {
-            Observable.Range(0, 2).Concat(Observable.Range(5, 2))
-                .Subscribe(WriteLine);
-        }
-
-        [Test]
-        public void Repeat()
-        {
-            // Observable.Repear(TResult,int)
-            // Return an observable which repeats the given 
-            //  value the specified number of times
-            WriteLine("Repeat(TRresult,int)");
-            Observable.Repeat(2, 3)
-                .Subscribe(WriteLine, () => WriteLine("OnCompleted\n"));
-        }
-
-        [Test]
-        public void StartsWith()
-        {
-            Observable
-                .Range(10, 2)
-                .StartWith(8, 9)
-                .Subscribe(WriteLine);
-        }
-
-        [Test]
-        public void Amb()
-        {
-            Subject<string> a = new Subject<string>();
-            Subject<string> b = new Subject<string>();
-
-            Observable.Amb(a, b)
-                .Subscribe(WriteLine);
-
-            a.OnNext("a");
-            b.OnNext("1");
-            a.OnNext("b");
-            b.OnNext("2");
-        }
-
-        [Test]
-        public void Merge()
-        {
-            Subject<string> a = new Subject<string>();
-            Subject<string> b = new Subject<string>();
-
-            Observable.Merge(a, b)
-                .Subscribe(WriteLine);
-
-            a.OnNext("a");
-            b.OnNext("1");
-            a.OnNext("b");
-            b.OnNext("2");
-        }
 
         [Test]
         public void Switch()

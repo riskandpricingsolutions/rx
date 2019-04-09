@@ -66,11 +66,16 @@
     <Compile Include="Basics\HotAndCold\ConnectableObservableTest.cs" />
     <Compile Include="Basics\HotAndCold\HotObservable.cs" />
     <Compile Include="Basics\Scheduling\SchedulingExamples.cs" />
+    <Compile Include="Operators\Combining\MergeTest.cs" />
+    <Compile Include="Operators\Combining\AmbTest.cs" />
+    <Compile Include="Operators\Combining\ConcatTest.cs" />
+    <Compile Include="Operators\Combining\StartsWithTest.cs" />
     <Compile Include="Operators\Inspecting\AllTest.cs" />
     <Compile Include="Operators\Inspecting\Any.cs" />
     <Compile Include="Operators\Inspecting\ContainsTest.cs" />
     <Compile Include="Operators\Inspecting\DefaultIfEmpty.cs" />
     <Compile Include="Operators\Inspecting\ElementAtTest.cs" />
+    <Compile Include="Operators\Combining\RepeatTest.cs" />
     <Compile Include="Operators\TimeShifting\Delay.cs" />
     <Compile Include="Operators\TimeShifting\Buffer.cs" />
     <Compile Include="Operators\TimeShifting\Sample.cs" />
@@ -81,6 +86,7 @@
   <ItemGroup>
     <None Include="Basics\HotAndCold\Notes\HotAndColdObservables.md" />
     <None Include="Basics\Scheduling\Notes\Scheduling.md" />
+    <None Include="Operators\Combining\Notes\Combining.md" />
     <None Include="Operators\TimeShifting\Notes\Delay.md" />
     <None Include="Operators\TimeShifting\Notes\Buffer.md" />
     <None Include="Operators\TimeShifting\Notes\Sample.md" />
@@ -92,6 +98,12 @@
     <Folder Include="Basics\Scheduling\Notes\Resources\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Operators\Combining\Notes\Resources\Amb.png" />
+    <Content Include="Operators\Combining\Notes\Resources\Concat.png" />
+    <Content Include="Operators\Combining\Notes\Resources\file.png" />
+    <Content Include="Operators\Combining\Notes\Resources\Merge.png" />
+    <Content Include="Operators\Combining\Notes\Resources\Repeat.png" />
+    <Content Include="Operators\Combining\Notes\Resources\StartsWith.png" />
     <Content Include="Operators\TimeShifting\Notes\Resources\Sample.png" />
   </ItemGroup>
   <ItemGroup>
